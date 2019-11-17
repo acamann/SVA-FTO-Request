@@ -1,0 +1,72 @@
+Imports Microsoft.VisualBasic
+Imports SVAAppServices
+
+Namespace SVAAppHandlers
+
+    Public Class SessionHandler
+
+        Protected context As HttpContext = HttpContext.Current
+        Protected appServices As New AppServices
+
+#Region " Set Up Session Variables "
+
+        Public Sub SetUpSessionVariables()
+            'if the session variables aren't already set up
+            If context.Session("empId") Is Nothing Then
+
+                'get the username from server vars
+                Dim userName As String
+                userName = Trim(context.Request.ServerVariables("LOGON_USER")) 'their username with domain
+                userName = Mid(userName, InStr(1, userName, "\") + 1, Len(userName)) 'shave the domain name
+
+                'use the username to search for the employee
+                Dim employees As Application.EmployeeDataTable = appServices.GetEmployeeByUserName(userName)
+                If employees.Rows.Count > 0 Then
+                    Dim employee As Application.EmployeeRow = employees.Rows(0)
+                    'setup session vars
+                    context.Session("empId") = employee.EmpId
+                    context.Session("empName") = employee.EmpName
+                    context.Session("office") = employee.Office
+                    context.Session("department") = employee.Department
+                    context.Session("empEmail") = employee.EmpEmail
+
+                End If
+
+                Dim applicationId As Integer = ConfigurationManager.AppSettings("ApplicationId")
+                context.Session("applicationId") = applicationId
+
+            End If
+        End Sub
+
+#End Region
+
+#Region " Setup Security Session Helper "
+
+        Public Sub SetupSecuritySession()
+            SetUpSessionVariables()
+
+            Dim empId As Integer = context.Session("empId")
+            Dim applicationId As Integer = context.Session("applicationId")
+
+            context.Session("userParts") = GetUserParts(applicationId, empId)
+        End Sub
+
+        Protected Function GetUserParts(ByVal applicationId As Integer, ByVal userId As Integer) As ArrayList
+            Dim userParts As New ArrayList
+
+            'go through records, add to array (or convert to array somehow)
+            Dim securityParts As Application.SecurityPartDataTable
+            securityParts = appServices.GetSecurityParts(applicationId, userId)
+            Dim securityPart As Application.SecurityPartRow
+            For Each securityPart In securityParts
+                userParts.Add(securityPart.PartId.ToString)
+            Next
+
+            Return userParts
+        End Function
+
+#End Region
+
+    End Class
+
+End Namespace

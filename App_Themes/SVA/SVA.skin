@@ -1,0 +1,57 @@
+<asp:GridView runat="server" CellPadding="0">
+    <FooterStyle CssClass="gridview-row-footer" />
+    <EmptyDataRowStyle CssClass="gridview-row-empty" />
+    <RowStyle CssClass="gridview-row" />
+    <SelectedRowStyle CssClass="gridview-row-selected" />
+    <HeaderStyle CssClass="gridview-header" />
+    <AlternatingRowStyle CssClass="gridview-row-alt" />
+    <Columns>
+        <asp:TemplateField ShowHeader="False">
+            <ItemStyle HorizontalAlign="Center" Width="20px" />
+               <ItemTemplate>
+                  <asp:ImageButton ID="ibEdit" runat="server" CommandName="Select" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnEdit.gif"
+                    Style="position: static" ToolTip="Click here to view or edit this record's details." />
+               </ItemTemplate>
+        </asp:TemplateField>
+        <asp:TemplateField ShowHeader="False">
+            <ItemStyle HorizontalAlign="Center" Width="20px" />
+                <ItemTemplate>
+                    <asp:ImageButton ID="ibDelete" runat="server" CommandName="Delete" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnDeleteX.gif"
+                     Style="position: static" ToolTip="Click here to delete this record." />
+                </ItemTemplate>
+        </asp:TemplateField>
+     </Columns>
+</asp:GridView>
+<asp:TextBox runat="server" CssClass="textbox" />
+<asp:ListBox runat="server" CssClass="listbox" />
+<asp:Calendar runat="server" CellPadding="0" CssClass="calendar" ToolTip="Please select a date."
+            Height="178px" Style="position: static" Width="201px">
+            <SelectedDayStyle BackColor="#BFD7FA" CssClass="calendar-selectedday" />
+            <TodayDayStyle CssClass="calendar-today" />
+            <DayStyle CssClass="calendar-day" />
+            <DayHeaderStyle CssClass="calendar-dayheader" />
+            <TitleStyle CssClass="calendar-header" />
+</asp:Calendar>
+<asp:RangeValidator runat="server" CssClass="validator" />
+<asp:CompareValidator runat="server" CssClass="validator"/>
+<asp:RequiredFieldValidator runat="server" CssClass="validator" />
+<asp:CustomValidator runat="server" CssClass="validator" />
+<asp:ValidationSummary runat="server" CssClass="validator-summary"/>
+<asp:SiteMapPath runat="server">
+    <PathSeparatorStyle CssClass="sitemappath-separator" />
+    <CurrentNodeStyle CssClass="sitemappath-currentnode" />
+    <NodeStyle CssClass="sitemappath-node" />
+    <RootNodeStyle CssClass="sitemappath-root" />
+</asp:SiteMapPath>
+<asp:Menu runat="server" SkinID="Horizontal" Orientation="Horizontal" Height="30px" StaticEnableDefaultPopOutImage="False" StaticTopSeparatorImageUrl="http://apps.svamain.loc/common/backgrounds/menu-separator.jpg" StaticSubMenuIndent="0px">
+    <StaticMenuStyle CssClass="menu-static" />
+    <StaticMenuItemStyle CssClass="menu-static-item" />
+    <DynamicHoverStyle CssClass="menu-dynamic-hover" />
+    <DynamicMenuStyle CssClass="menu-dynamic" />
+    <DynamicMenuItemStyle CssClass="menu-dynamic-item" />
+    <StaticHoverStyle CssClass="menu-static-hover" />
+</asp:Menu>
+<asp:ImageButton SkinID="Email" runat="server" ToolTip="Click to to send an email" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnEmail.gif" />
+<asp:ImageButton SkinID="Delete" runat="server" ToolTip="Click to delete this item" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnDeleteX.gif" />
+<asp:ImageButton SkinID="Edit" runat="server" ToolTip="Click to edit/view the details for this item" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnEdit.gif" />
+<asp:ImageButton SkinID="Calendar" runat="server" ToolTip="Click here to view a calendar" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnCalendar.gif" />

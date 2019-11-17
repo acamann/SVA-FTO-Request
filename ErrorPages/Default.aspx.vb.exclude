@@ -1,0 +1,22 @@
+
+Partial Class CustomError_Default
+    Inherits System.Web.UI.Page
+
+    Protected errorQuotes As String() = { _
+        "'Knowledge rests not upon truth alone, but upon error also.' - Carl Gustav Jung", _
+        "'To rise from error to truth is rare and beautiful.' - Victor Hugo", _
+        "'If you make an error, use it as a stepping stone to a new idea you might not have otherwise discovered.' - Roger von Oech ", _
+        "'The wisest of the wise may err.' - Aeschylus", _
+        "'Mistake, error, is the discipline through which we advance.' - William Ellery Channing", _
+        "'A man's errors are what make him amiable.' - Johann Wolfgang von Goethe", _
+        "'Man errs as long as he strives.' - Johann Wolfgang von Goethe", _
+        "'Admitting errors clears the score and proves you wiser than before.' - Arthur Guiterman", _
+        "'Error is just as important a condition of life as truth.' - Carl Gustav Jung", _
+        "'The smallest errors are always the best.' - Jean Baptiste Poquelin", _
+        "'The man who makes no mistakes does not usually make anything.' - Edward J. Phelps" _
+        }
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        lblErrorQuote.Text = errorQuotes(CInt(Rnd() * (errorQuotes.Length - 1)))
+    End Sub
+End Class

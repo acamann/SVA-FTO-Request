@@ -1,0 +1,23 @@
+<%@ Page Language="VB" AutoEventWireup="false" CodeFile="InsufficientAccess.aspx.vb" Inherits="ErrorPages_InsufficientAccess" StylesheetTheme="Gray" Theme="Gray" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head id="Head1" runat="server">
+    <title>Insufficient Access</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <span class="bodytext">
+            <h1 style="color:Maroon;">Sorry!</h1>
+            <h2 style="color:Gray;">You have insufficient access to view this page.</h2>
+            
+            If you feel you've reached this page in error, please  
+            <asp:HyperLink ID="hlSubmitBug" runat="server" ForeColor="Blue" 
+                    NavigateUrl="~/ErrorPages/Submit.aspx">
+                submit a bug report.
+            </asp:HyperLink>
+        </span>
+    </form>
+</body>
+</html>

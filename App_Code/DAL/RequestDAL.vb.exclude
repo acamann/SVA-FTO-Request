@@ -1,0 +1,87 @@
+Imports Microsoft.VisualBasic
+Imports System.Data
+Imports System.Data.SqlClient
+Imports Microsoft.ApplicationBlocks.Data
+
+'RequestDAL has data access methods to retreive FTO request information from the DB
+' as well as update methods for insertion and approval
+Public Class RequestDAL
+
+    'Connection to the SVA Intranet DB as found in the web.config file
+    Protected Shared _ConIntranet As String = ConfigurationManager.ConnectionStrings("cnSVAIntranet").ConnectionString
+
+#Region "Data Update Methods"
+
+    'inserts a request record with the passed attributes into the frm_FTORequests table
+    Public Shared Sub InsertFTORequest(ByVal empName As String, ByVal empNum As String, ByVal empEmail As String, _
+                                    ByVal dateOfRequest As DateTime, ByVal dateFrom As DateTime, _
+                                    ByVal dateTo As DateTime, ByVal approverName As String, _
+                                    ByVal approverNum As String, ByVal approverEmail As String, _
+                                    ByVal requestType As String, ByVal totalHoursOff As String, _
+                                    ByVal empNotes As String)
+        SqlHelper.ExecuteNonQuery(_ConIntranet, CommandType.StoredProcedure, "sp_InsertFTORequest", _
+            New SqlParameter("@empName", empName), _
+            New SqlParameter("@empNum", empNum), _
+            New SqlParameter("@empEmail", empEmail), _
+            New SqlParameter("@dateOfRequest", dateOfRequest), _
+            New SqlParameter("@dateFrom", dateFrom), _
+            New SqlParameter("@dateTo", dateTo), _
+            New SqlParameter("@approverName", approverName), _
+            New SqlParameter("@approverNum", approverNum), _
+            New SqlParameter("@approverEmail", approverEmail), _
+            New SqlParameter("@requestType", requestType), _
+            New SqlParameter("@totalHoursOff", totalHoursOff), _
+            New SqlParameter("@empNotes", empNotes))
+    End Sub
+
+    'updates a request record after a supervisor has responded
+    Public Shared Sub RespondToFTORequest(ByVal requestNumber As Integer, ByVal actionTaken As String, _
+                                 ByVal approvedBy As String, ByVal dateApproved As String, _
+                                 ByVal ftoBalance As String, ByVal comments As String)
+
+        SqlHelper.ExecuteNonQuery(_ConIntranet, CommandType.StoredProcedure, "sp_RespondToFTORequest", _
+            New SqlParameter("@requestNumber", requestNumber), _
+            New SqlParameter("@actionTaken", actionTaken), _
+            New SqlParameter("@approvedBy", approvedBy), _
+            New SqlParameter("@dateApproved", dateApproved), _
+            New SqlParameter("@ftoBalance", ftoBalance), _
+            New SqlParameter("@comments", comments))
+    End Sub
+
+#End Region
+
+#Region "Data Access Methods"
+
+    Public Shared Function GetFTORecordID(ByVal dateOfRequest As DateTime) As Integer
+        Dim reader As SqlDataReader
+        reader = SqlHelper.ExecuteReader(_ConIntranet, CommandType.StoredProcedure, _
+            "sp_GetFTORecIdByDate", New SqlParameter("@dateOfRequest", dateOfRequest))
+
+        reader.Read()
+        Return reader("fto_RecID")
+    End Function
+
+    Public Shared Function GetFTORequest(ByVal requestNumber As Integer) As SqlDataReader
+        Dim reader As SqlDataReader
+        reader = SqlHelper.ExecuteReader(_ConIntranet, CommandType.StoredProcedure, _
+                    "sp_GetFTORequest", New SqlParameter("@requestNumber", requestNumber))
+        Return reader
+    End Function
+
+#End Region
+
+#Region "Add To Front Desk"
+
+    Public Shared Sub AddToFrontDesk(ByVal empNum As Integer, ByVal notes As String, _
+                        ByVal leaveDateTime As String, ByVal returnDateTime As String)
+
+        SqlHelper.ExecuteNonQuery(_ConIntranet, CommandType.StoredProcedure, "FrontDesk_SignoutEmployee", _
+            New SqlParameter("@employeeId", empNum), _
+            New SqlParameter("@leaveDateTime", leaveDateTime), _
+            New SqlParameter("@returnDateTime", returnDateTime), _
+            New SqlParameter("@notes", notes))
+    End Sub
+
+#End Region
+
+End Class

@@ -1,0 +1,107 @@
+<%@ Page Language="VB" AutoEventWireup="false" CodeFile="Submit.aspx.vb" Inherits="CustomError_Submit" StylesheetTheme="Gray" Theme="Gray" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head runat="server">
+    <style type="text/css" >
+        /*div table fields*/
+        div.row {
+          overflow: hidden;
+          width: 100%;
+        }
+        div.row span.label {
+          float: left;
+          width: 170px;
+          color: black;
+          padding: 3px;
+          text-align: right;
+          font-weight: bold;
+        }
+        div.row span.content {
+          float: left;
+          color: black;
+          text-align: left;
+          padding: 3px;
+        } 
+    </style>
+    <title>Submit a Bug Report</title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <span style="font-family:Arial;font-size:20pt;"><b>Submit a Bug Report</b></span><br />
+        <br />
+        
+        <asp:MultiView ID="mvBug" runat="server" ActiveViewIndex="0">
+            <asp:View ID="viewSubmit" runat="server">
+                <span class="bodytext">
+                    
+                    <div class="row">
+                        <span class="label">Application:</span>
+                        <span class="content">
+                            <asp:Label ID="lblApplication" runat="server" Text="">
+                            </asp:Label>
+                        </span>
+                    </div>                    
+                    <div class="row">
+                        <span class="label">Date Reported:</span>
+                        <span class="content">
+                            <asp:Label ID="lblDateReported" runat="server" Text="">
+                            </asp:Label>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Reported By:</span>
+                        <span class="content">
+                            <asp:Label ID="lblReportedBy" runat="server" Text="">
+                            </asp:Label>
+                        </span>
+                    </div>
+                    
+                    <div class="row">
+                        <span class="label">Steps to reproduce the bug:</span>
+                        <span class="content">
+                            <asp:TextBox ID="txtSteps" runat="server" 
+                                TextMode="multiline" Columns="70" Rows="4" 
+                                Text="">
+                            </asp:TextBox>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="label">What you expected to see:</span>
+                        <span class="content">
+                            <asp:TextBox ID="txtExpected" runat="server" 
+                                TextMode="multiline" Columns="70" Rows="4" 
+                                Text="">
+                            </asp:TextBox>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="label">What you actually saw:</span>
+                        <span class="content">
+                            <asp:TextBox ID="txtActual" runat="server" 
+                                TextMode="multiline" Columns="70" Rows="4" 
+                                Text="">
+                            </asp:TextBox>
+                        </span>
+                    </div>
+                    
+                    <div class="row">
+                        <span class="label"></span>
+                        <span class="content">
+                            <asp:Button ID="btnReportBug" runat="server" CausesValidation="True" ValidationGroup="ErrorTracking" Text="Report Bug" />
+                        </span>
+                    </div>
+                    
+                </span>
+            </asp:View>
+            <asp:View ID="viewMessage" runat="server">
+                <span style="font-family:Arial;font-size:18pt;">
+                    Thank You, your report has been submitted.
+                </span>
+            </asp:View>
+        </asp:MultiView>    
+        
+    </form>
+</body>
+</html>

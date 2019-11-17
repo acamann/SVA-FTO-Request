@@ -1,0 +1,175 @@
+Imports Microsoft.VisualBasic
+Imports System
+Imports System.Net.Mail
+Imports System.Net.Mail.SmtpClient
+Imports System.Web
+Imports System.Diagnostics
+Imports SVAAppServices
+
+Namespace SVAAppHandlers
+
+    Public Class ExceptionHandler
+
+#Region " Exception Variables "
+
+        Protected context As HttpContext = HttpContext.Current
+        Protected appServices As New AppServices
+
+        'Application variables
+        Protected applicationId As String = ConfigurationManager.AppSettings("ApplicationId")
+        Protected applicationName As String = String.Empty
+        Protected adminEmail As String = String.Empty
+        Protected mailExceptionsToAdmin As Boolean = False
+        Protected logExceptionsToDatabase As Boolean = False
+
+        'Error variables
+        Protected referer As String = String.Empty
+        Protected form As String = String.Empty
+        Protected message As String = String.Empty
+        Protected targetSite As String = String.Empty
+        Protected stackTrace As String = String.Empty
+        Protected query As String = String.Empty
+        Protected empId As String = String.Empty
+        Protected empName As String = String.Empty
+        Protected errorData As String = String.Empty
+        Protected eventID As Integer = 0
+
+#End Region
+
+#Region " Initial Processing "
+
+        Public Sub handleException(ByVal ex As Exception)
+
+            'get application information from app services dll
+            Dim applications As New Application.ApplicationsDataTable
+            applications = appServices.GetApplicationByID(applicationId)
+            If applications.Rows.Count > 0 Then
+                Dim application As Application.ApplicationsRow = applications.Rows(0)
+                mailExceptionsToAdmin = application.EmailExceptions
+                logExceptionsToDatabase = application.LogExceptionsToDB
+                applicationName = application.Name
+                adminEmail = application.AdminEmail
+            End If
+
+            'find employee id and name
+            If context.Session("empId") Is Nothing Then
+                Dim sessionHandler As New SessionHandler
+                sessionHandler.SetUpSessionVariables()
+            End If
+            empId = context.Session("empId")
+            empName = context.Session("empName")
+
+            'check for nulls in context objects
+            If Not context.Request.Form Is Nothing Then
+                form = context.Request.Form.ToString
+            End If
+            If Not context.Request.ServerVariables("HTTP_REFERER") Is Nothing Then
+                referer = context.Request.ServerVariables("HTTP_REFERER").ToString
+            End If
+            If Not context.Request.QueryString.ToString Is Nothing Then
+                query = context.Request.QueryString.ToString
+            End If
+
+            'get error information
+            targetSite = ex.TargetSite.ToString
+            stackTrace = ex.StackTrace.ToString
+            message = ex.Message
+
+            'capture all the exception data
+            errorData = "SOURCE: " & ex.Source & vbCrLf & vbCrLf _
+                & "ERROR MESSAGE: " & ex.Message & vbCrLf & vbCrLf _
+                & "FORM: " & form & vbCrLf & vbCrLf _
+                & "QUERYSTRING: " & query & vbCrLf & vbCrLf _
+                & "TARGETSITE: " & targetSite & vbCrLf & vbCrLf _
+                & "REFERER: " & referer & vbCrLf & vbCrLf _
+                & "USER: " & empName
+
+            'check to see if we need to execute the mail admin sub
+            If mailExceptionsToAdmin Then
+                'make sure we have an app admin email
+                If Not adminEmail Is Nothing Then
+                    MailExceptionToAppAdmin()
+                End If
+            End If
+
+            'check to see if we need to execute the log to database sub
+            If logExceptionsToDatabase Then
+                LogExceptionToDatabase(ex)
+            End If
+
+        End Sub
+
+#End Region
+
+#Region " Send App Admin Email "
+
+        'In order for this method to execute, the following section needs to be
+        'present in the web.config file (with the current valid smtp host information):
+        '
+        '  <system.net>
+        '   <mailSettings>
+        '     <smtp from="">
+        '       <network host="madex01" password="" userName=""/>
+        '     </smtp>
+        '   </mailSettings>
+        '  </system.net>
+        '
+        Protected Sub MailExceptionToAppAdmin()
+
+            'Emails the application's administrator
+            Dim emailName As String = applicationName & " Error"
+            Dim smtpClient As New SmtpClient
+            Dim message As New MailMessage
+            Dim sender As New MailAddress("no-reply@sva.com", emailName)
+
+            message.To.Add(adminEmail)
+            message.IsBodyHtml = False
+            message.From = sender
+            message.Subject = "Application Exception"
+            message.Body = message.Body & "Error troubleshooting information is included below." & vbCrLf & vbCrLf
+            message.Body = message.Body & errorData
+            smtpClient.Send(message)
+
+            message.Dispose()
+            sender = Nothing
+
+        End Sub
+
+#End Region
+
+#Region " Log Exception to Database "
+
+        Protected Sub LogExceptionToDatabase(ByVal ex As Exception)
+
+            Dim errorLogDetails As String = String.Empty
+
+            errorLogDetails = "SOURCE: " & ex.Source & vbCrLf & vbCrLf _
+                & "ERROR MESSAGE: " & message & vbCrLf & vbCrLf _
+                & "FORM: " & form & vbCrLf & vbCrLf _
+                & "QUERYSTRING: " & query & vbCrLf & vbCrLf _
+                & "TARGETSITE: " & targetSite & vbCrLf & vbCrLf _
+                & "STACK TRACE: " & stackTrace & vbCrLf & vbCrLf _
+                & "REFERER: " & referer
+
+            'Log exception data to database
+            Try
+
+                appServices.AddError(DateTime.Now, applicationId, empId, message, _
+                                       errorLogDetails, Nothing, 100, 101, Nothing)
+
+            Catch exc As Exception
+
+                'if the database write fails, log it into the server event log
+                EventLog.WriteEntry(ex.Source, "Database Error From Exception Log!", EventLogEntryType.Error, 65535)
+
+            End Try
+
+        End Sub
+
+#End Region
+
+    End Class
+
+End Namespace
+
+

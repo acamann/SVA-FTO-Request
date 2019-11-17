@@ -1,0 +1,61 @@
+﻿div.everything
+{
+    padding: 4px;
+    overflow: auto; 
+    right:0px; 
+    left:0px; 
+    bottom:30px; 
+    top:67px; 
+    position: fixed;
+    background-color:#ffffff;
+}
+div.wrapper 
+{
+    font-family:Tahoma Arial;
+    max-width:600px; 
+    border: solid 2px #2557AD;
+}
+div.header 
+{
+    background-color:#2557AD; 
+    color:#ffffff; 
+    padding:4px; 
+    font-size:22px;
+}
+div.content
+{
+    background-color:#FFFFE1; 
+    color:#285AB0; 
+    padding: 10px;
+    font-size:13px;
+}
+div.footer
+{
+    padding:4px; 
+    border-top:solid 1px #2557AD; 
+    color:#2557AD; 
+    font-size:18px;
+    background-color:#ffffff;
+}
+
+/*div table fields*/
+div.row 
+{
+    overflow: hidden;
+    width: 100%;
+}
+div.row div.label 
+{
+    float: left;
+    width: 120px;
+    padding: 3px;
+    text-align: right;
+    font-weight: bold;
+}
+div.row div.content 
+{
+    float: left;
+    width: auto;
+    text-align: left;
+    padding: 3px;
+}

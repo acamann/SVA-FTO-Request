@@ -1,0 +1,23 @@
+﻿/*div table fields*/
+div.row 
+{
+    overflow: hidden;
+    width: 100%;
+    /*height: 1%;*/
+}
+div.row div.left 
+{
+    float: left;
+    width: 120px;
+    padding: 3px;
+    text-align: right;
+    font-weight: bold;
+}
+div.row div.right
+{
+    float: left;
+    width: auto;
+    text-align: left;
+    padding: 3px;
+}
+

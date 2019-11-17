@@ -1,0 +1,32 @@
+<asp:TreeView runat="server" ImageSet="Arrows">
+            <ParentNodeStyle Font-Bold="False" />
+            <HoverNodeStyle Font-Underline="True" ForeColor="Blue" />
+        <SelectedNodeStyle BackColor="LightGray" BorderColor="DarkGray" BorderStyle="Solid"
+            BorderWidth="1px" ForeColor="Black" HorizontalPadding="4px" />
+            <NodeStyle Font-Names="Tahoma" Font-Size="10pt" ForeColor="Black" HorizontalPadding="5px"
+                NodeSpacing="0px" VerticalPadding="0px" />
+</asp:TreeView>
+<asp:GridView runat="server" BorderColor="WhiteSmoke" BorderStyle="Solid" BorderWidth="1px" GridLines="Horizontal">
+        <RowStyle CssClass="gridviewrow" />
+        <HeaderStyle CssClass="gridviewheader" />
+        <SelectedRowStyle CssClass="gridviewrow-hl" />
+        <EmptyDataRowStyle CssClass="gridviewheader"/>
+</asp:GridView>
+<asp:textbox runat="server" CssClass="formcontrol"/>
+<asp:button runat="server" CssClass="formcontrol"/>
+<asp:RequiredFieldValidator runat="server" ErrorMessage="Required." 
+            CssClass="validatorerror" Height="12px" Width="75px" />
+<asp:CompareValidator runat="server" ErrorMessage="Invalid." CssClass="validatorerror"
+            Height="12px" Width="75px" />
+
+<asp:Calendar runat="server" Height="1px" ShowGridLines="True" Width="97px">
+    <SelectedDayStyle BackColor="LightBlue" Font-Names="Tahoma" Font-Size="11px" ForeColor="#404040" />
+    <TodayDayStyle BackColor="LightBlue" ForeColor="Transparent" />
+    <DayStyle CssClass="bodytext" />
+    <DayHeaderStyle CssClass="bodytext" />
+    <TitleStyle BorderColor="#E0E0E0" BorderStyle="Solid" BorderWidth="1px" CssClass="gridviewheader" />
+</asp:Calendar>
+<asp:ImageButton SkinID="Email" runat="server" ToolTip="Click to to send an email" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnEmail.gif" />
+<asp:ImageButton SkinID="Delete" runat="server" ToolTip="Click to delete this item" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnDeleteX.gif" />
+<asp:ImageButton SkinID="Edit" runat="server" ToolTip="Click to edit/view the details for this item" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnEdit.gif" />
+<asp:ImageButton SkinID="Calendar" runat="server" ToolTip="Click here to view a calendar" ImageUrl="http://apps.svamain.loc/common/images/buttons/btnCalendar.gif" />

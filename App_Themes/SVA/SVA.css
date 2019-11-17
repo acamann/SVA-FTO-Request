@@ -1,0 +1,366 @@
+﻿/*
+************************************
+* Default CSS sheet for SVA Apps   *
+* Version: 4.5                     *
+* Dated: 5/9/2007                  *
+* Updated By: Craig Brown          *
+************************************
+*/
+
+body
+{
+    margin: 0px;
+    height: 100%;
+    font-family: Tahoma, Arial;
+}
+
+/* Hyperlinks */
+a, a:visited, a:active
+{
+    text-decoration: none;
+}
+
+.divheader
+{
+    border-top: gray 3px solid;
+    z-index: 102;
+    left: 0px;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    height: 50px;
+    background-color: white;
+}
+.divheaderspan
+{
+    z-index: 100;
+    left: 50px;
+    position: absolute;
+    top: 0px;
+}
+.divapptitle
+{
+    z-index: 103;
+    left: 0px;
+    width: 100%;
+    background-image: url(Backgrounds/grid_header_bg.jpg);
+    border-bottom: #999999 1px solid;
+    position: absolute;
+    top: 53px;
+    height: 23px;
+    line-height: 22px;
+    background-color: #5175c9;
+}
+.divapptitlelabel
+{
+    color: White;
+    font-size: 90%;
+    padding-left: 5px;
+}
+.divleftnav
+{
+    z-index: 101;
+    left: 3px;
+    width: 195px;
+    position: absolute;
+    top: 70px;
+    height: 250px;
+}
+.divleftnavbg
+{
+    border-right: #999999 1px solid;
+    z-index: 101;
+    left: 0px;
+    width: 200px;
+    position: absolute;
+    top: 0px;
+    height: 100%;
+    background-color: #f1f1f1;
+}
+.divbody
+{
+    z-index: 105;
+    left: 208px;
+    width: 80%;
+    position: absolute;
+    top: 110px;
+    overflow: visible;
+}
+.divfooter
+{
+    border-top: #999999 1px solid;
+    z-index: 104;
+    left: 0px;
+    width: 100%;
+    bottom: 0px;
+    position: absolute;
+    height: 30px;
+    background-color: #f1f1f1;
+}
+.divfootertextspan
+{
+    padding-left: 5px;
+    font-size: 70%;
+    line-height: 30px;
+}
+.sitemappath, li, .sitemapnodedescription
+{
+    font-size: 70%;
+}
+.leftnavrootnode
+{
+    font-size: 80%;
+}
+.leftnavparentnode, .leftnavnode, .leftnavselectednode
+{
+    font-size: 80%;
+}
+.divapptitlelabel, .leftnavrootnode, .sitemaptitle
+{
+    font-weight: bold;
+}
+.leftnavselectednode
+{
+    border-right: #999999 1px solid;
+    border-top: #999999 1px solid;
+    border-left: #999999 1px solid;
+    border-bottom: #999999 1px solid;
+    background-color: buttonface;
+    padding-left: 2px;
+    width: 100%;
+    color: #000000;
+}
+
+/* Images */
+img
+{
+    border: 0px;
+}
+
+/* Headers */
+h1
+{
+    font-size: 100%;
+    font-weight: bold;
+}
+h2
+{
+    font-size: 80%;
+    font-weight: bold;
+}
+h3
+{
+    font-size: 75%;
+    font-weight: bold;
+}
+
+/* Lists */
+li {
+	list-style-type: square;
+}
+
+/* Controls */
+.gridview-row, .gridview-row-alt, .gridview-row-selected, .gridview-row-empty 
+{
+    font-size: 75%;
+    height: 25px;
+    padding: 4px;
+}
+
+.gridview-row-alt
+{
+    background-color: #f5f5f5;
+}
+
+.gridview-row-empty
+{
+    border-right: gray 1px solid;
+    border-top: gray 1px solid;
+    border-left: gray 1px solid;
+    border-bottom: gray 1px solid;
+    background-color: #f2f2f2;
+}
+
+.gridview-row-selected
+{
+    background-color: #d2deee;
+}
+
+.gridview-header
+{
+    height: 23px;
+    line-height: 22px;
+    background-image: url(Backgrounds/grid_header_bg.jpg);
+    font-weight: bold;
+    font-size: 75%;
+    color: White;
+    border-right: #57566f 1px solid;
+    border-top: #57566f 1px solid;
+    border-left: #57566f 1px solid;
+    border-bottom: 1px;
+    padding-left: 2px;
+    cursor: hand;
+}
+
+.gridview-footer
+{
+}
+
+.gridview-pager
+{
+}
+
+.textbox, .listbox
+{
+    border-right: #57566f 1px solid;
+    border-top: #57566f 1px solid;
+    border-left: #57566f 1px solid;
+    border-bottom: #57566f 1px solid;
+    font-size: .8em;
+}
+
+.calendar
+{
+    width: 200px;
+    height: 200px;
+}
+
+.calendar-header
+{
+    background-image: url(Backgrounds/grid_header_bg.jpg);
+    font-size: 70%;
+    height: 23px;
+    color: White;
+}
+.calendar-dayheader
+{
+    background-color: #f3f3f3;
+    font-size: 70%;
+    font-weight: normal;
+    height: 20px;
+}
+
+.calendar-day
+{
+    font-size: 70%;
+    height: 21px;
+}
+
+.calendar-selectedday
+{
+    font-size: 70%;
+    font-weight: bold;
+}
+
+.calendar-today
+{
+    font-size: 70%;
+    border-right: #bfd7fa 1px solid;
+    border-top: #bfd7fa 1px solid;
+    border-left: #bfd7fa 1px solid;
+    border-bottom: #bfd7fa 1px solid;
+}
+
+.validator, .validator-summary
+{
+    font-size: 85%;
+    color: Red;
+}
+
+.validator-summary
+{
+    list-style-type: square;
+}
+
+.sitemappath-root, .sitemappath-node, .sitemappath-currentnode, .sitemappath-separator
+{
+    font-size: 70%;
+}
+
+.menu-static
+{
+    background-image: url(http://apps.svamain.loc/common/backgrounds/menu-bg.jpg);
+    height: 30px;
+    border-right: #cccccc 2px solid;
+}
+
+.menu-static-item
+{
+    font-size: 70%;
+    color: Black;
+    height: 30px;
+}
+
+.menu-static-hover
+{
+    border-right: gray 2px solid;
+    border-top: #bfd7fa 1px solid;
+    border-left: #cccccc 1px solid;
+    background-color: white;
+    padding-left: 3px;
+}
+
+.menu-dynamic
+{
+    border-right: #f4f4f4 3px outset;
+    font-size: 75%;
+    border-top-style: none;
+    border-bottom: #f4f4f4 3px outset;
+    background-color: white;
+    width: 125px;
+    border-left: #cccccc 1px solid;
+    padding: 2px;
+}
+
+.menu-dynamic-item
+{
+        height: 20px;
+            padding: 2px;
+            color: Black;
+            
+}
+
+.menu-dynamic-hover
+{
+    background-color: #bfd7fa;
+    height: 20px;
+    padding: 2px;
+    width: 125px;
+    color: White;
+}
+
+.panecontent
+{
+    border-right: #000000 1px solid;
+    padding-right: 4px;
+    border-top: #000000 1px solid;
+    padding-left: 4px;
+    font-size: 0.8em;
+    padding-bottom: 4px;
+    border-left: #000000 1px solid;
+    padding-top: 4px;
+    border-bottom: #000000 1px solid;
+}
+
+.maskedtextbox
+{
+    background-color: #ccccff;
+        border-right: #57566f 1px solid;
+    border-top: #57566f 1px solid;
+    border-left: #57566f 1px solid;
+    border-bottom: #57566f 1px solid;
+    font-size: .8em;
+}
+
+.passwordstrength
+{
+    font-size: 75%;
+    color: white;
+    font-style: italic;
+    background-color: gray;
+    width: 125px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+}
+/* end of controls */

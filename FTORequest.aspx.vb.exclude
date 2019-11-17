@@ -1,0 +1,153 @@
+Imports System.Net.Mail
+
+Partial Class _FTORequest
+    Inherits System.Web.UI.Page
+
+    Protected fromDate As DateTime
+    Protected toDate As DateTime
+    Protected employee As Employee = New Employee() ' get the current user's information
+    Protected ftoRequest As FTORequest
+
+#Region "Page Load"
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Not IsPostBack Then
+            'set automatic employee and date values
+            txtEmployee.Text = employee.GetUserName
+            txtRequestDate.Text = Now.ToString
+            txtFTOBalance.Text = employee.GetFTOBalance(employee.GetUserNum)
+
+            'set default date values
+            txtFromDate.Text = Now.ToShortDateString
+            txtToDate.Text = Now.ToShortDateString
+
+            lblSupervisorName.Text = employee.GetApproverName
+        End If
+    End Sub
+
+    Protected Sub Page_Init(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Init
+        'is the user coming in from the Citrix gateway? If so, ajax needs to be disabled.
+        Dim IPAddress As String = Request.UserHostAddress.ToString
+        If IPAddress = "10.20.2.64" Then
+            RadAjaxPanel1.EnableAJAX = False
+        End If
+    End Sub
+
+
+
+#End Region
+
+#Region "Form Control Event Handlers"
+
+    Protected Sub btnEmail_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        If DataIsValid() = True Then
+            'If Data is Validated, update DB, send email, show notification
+            InsertRequest()
+            SendEmail()
+            lblNotificationTitle.Text = "Success!"
+            lblNotification.Text = "Your FTO request has been emailed to your supervisor and a copy has been emailed to you for your records."
+            mvFTORequest.SetActiveView(viewNotification)
+        End If
+    End Sub
+
+    Protected Sub btnPrint_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        If DataIsValid() Then
+            'If Data is Validated, update DB, display a printer friendly form
+            InsertRequest()
+
+            'update Print View fields
+            txtPrintRequestor.Text = ftoRequest.EmployeeName
+            txtPrintDateOfRequest.Text = ftoRequest.DateOfRequest
+            txtPrintRequestType.Text = ftoRequest.TypeOfRequest
+            txtPrintRequestDates.Text = ftoRequest.DateFrom & " to " & ftoRequest.DateTo
+            txtPrintTotalHours.Text = ftoRequest.TotalHoursOff
+            txtPrintFTOBalance.Text = employee.GetFTOBalance(ftoRequest.EmployeeNum)
+            txtPrintNotes.Text = ftoRequest.EmployeeNotes
+            mvFTORequest.SetActiveView(viewPrinterFriendly)
+        End If
+    End Sub
+
+#End Region
+
+#Region "Send Email"
+
+    Private Sub SendEmail()
+        'Send email to approver
+        ftoRequest.SendRequestToApprover()
+        'Send email to requester
+        ftoRequest.SendConfirmationToRequestor()
+    End Sub
+
+#End Region
+
+#Region "Insert Request"
+
+    Private Sub InsertRequest()
+        'Create the Request
+        ftoRequest = New FTORequest(employee.GetUserName, employee.GetUserNum, employee.GetUserEmail, _
+            txtRequestDate.Text, fromDate, toDate, employee.GetApproverName, employee.GetApproverNum, _
+            employee.GetApproverEmail, rblRequestType.SelectedValue, txtTotalHours.Text, txtNotes.Text)
+        'Insert the request into the Database
+        ftoRequest.InsertFTORequest()
+    End Sub
+
+#End Region
+
+#Region "Validate Form Data"
+
+    Private Function DataIsValid() As Boolean
+        'create the from and to date strings
+
+        If Not CompareValidator2.IsValid Then Return False
+        If Not RequiredFieldValidator1.IsValid Then Return False
+        If Not CompareValidator3.IsValid Then Return False
+        If Not RequiredFieldValidator3.IsValid Then Return False
+        If Not rfvRequestType.IsValid Then Return False
+        If Not rfvTotalHours.IsValid Then Return False
+
+        Dim fromDateString As String = txtFromDate.Text & " " & ddlFromHour.SelectedValue & ":" & ddlFromMin.SelectedValue & ddlFromAMPM.SelectedValue
+        Dim toDateString As String = txtToDate.Text & " " & ddlToHour.SelectedValue & ":" & ddlToMin.SelectedValue & ddlToAMPM.SelectedValue
+
+        'parse the from string, if it doesn't work return false
+        If Not (DateTime.TryParse(fromDateString, fromDate)) Then
+            lblFromDateFormat.Visible = True
+            Return False
+        Else
+            lblFromDateFormat.Visible = False
+        End If
+
+        If Not (DateTime.TryParse(toDateString, toDate)) Then
+            lblToDateFormat.Visible = True
+            Return False
+        Else
+            lblToDateFormat.Visible = False
+        End If
+
+        If (fromDate >= toDate) Then
+            lblFromBeforeTo.Visible = True
+            Return False
+        Else
+            lblFromBeforeTo.Visible = False
+        End If
+
+        Return True
+    End Function
+
+#End Region
+
+#Region "Calendars"
+
+    Protected Sub calFrom_SelectionChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles calFrom.SelectionChanged
+        txtFromDate.Text = calFrom.SelectedDate
+        popOutFromCal.HidePanel()
+    End Sub
+
+    
+    Protected Sub calTo_SelectionChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles calTo.SelectionChanged
+        txtToDate.Text = calTo.SelectedDate
+        popOutToCal.HidePanel()
+    End Sub
+
+#End Region
+
+End Class

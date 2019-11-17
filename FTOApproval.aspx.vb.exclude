@@ -1,0 +1,12 @@
+Partial Class FTOApproval
+    Inherits System.Web.UI.Page
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If Request.QueryString("requestNumber") Is Nothing Then
+            Response.Redirect("~/Default.aspx")
+        Else
+            Response.Redirect("~/Default.aspx?View=Request&RequestId=" & Request.QueryString("requestNumber"))
+        End If
+    End Sub
+
+End Class

@@ -1,0 +1,253 @@
+Imports Microsoft.VisualBasic
+Imports System.Net.Mail
+Imports System.Data
+Imports System.Data.SqlClient
+Imports Microsoft.ApplicationBlocks.Data
+
+'FTORequest keeps track of request specific information 
+' and inserts and updates the database accordingly
+Public Class FTORequest
+
+#Region "Class Attributes"
+
+    Protected requestNumber As String = String.Empty    'the primary key associated with this request
+    Protected empName As String = String.Empty          'the name of the requestor
+    Protected empNum As String = String.Empty           'the empID of the requestor
+    Protected empEmail As String = String.Empty         'the email of the requestor
+    Protected approverName As String = String.Empty     'the name of the approver
+    Protected approverNum As String = String.Empty      'the empID of the approver
+    Protected approverEmail As String = String.Empty    'the email of the approver
+    Protected requestDate As String = String.Empty      'the date that the request was made
+    Protected fromDate As DateTime                      'the beginning date and time of the FTO request
+    Protected toDate As DateTime                        'the ending date and time of the FTO request
+    Protected totalHours As String = String.Empty       'the total work hours of FTO requested
+    Protected requestType As String = String.Empty      'the type of request (FTO, unpaid...)
+    Protected notes As String = String.Empty            'notes left by the requestor
+    Protected actionTaken As String = String.Empty      'approved or denied
+    Protected approvedBy As String = String.Empty       'the name of the approver
+    Protected dateApproved As String = String.Empty     'the date that the request was responded to
+    Protected ftoBalance As String = String.Empty       'the remaining fto balance of the requestor
+    Protected comments As String = String.Empty         'comments left by the approver
+
+#End Region
+
+#Region "Constructors"
+
+    Public Sub New(ByVal _empName As String, ByVal _empNum As String, ByVal _empEmail As String, _
+                                    ByVal _dateOfRequest As String, ByVal _dateFrom As DateTime, _
+                                    ByVal _dateTo As DateTime, ByVal _approverName As String, _
+                                    ByVal _approverNum As String, ByVal _approverEmail As String, _
+                                    ByVal _requestType As String, ByVal _totalHoursOff As String, _
+                                    ByVal _empNotes As String)
+        empName = _empName
+        empNum = _empNum
+        empEmail = _empEmail
+        requestDate = _dateOfRequest
+        fromDate = _dateFrom
+        toDate = _dateTo
+        approverName = _approverName
+        approverNum = _approverNum
+        approverEmail = _approverEmail
+        requestType = _requestType
+        totalHours = _totalHoursOff
+        notes = _empNotes
+    End Sub
+
+    Public Sub New(ByVal _requestNumber As String)
+        requestNumber = _requestNumber
+        Dim reader As SqlDataReader = RequestDAL.GetFTORequest(Integer.Parse(requestNumber))
+        If reader.HasRows Then
+            reader.Read()
+            empName = reader("EmpName")
+            empNum = reader("EmpNum")
+            empEmail = reader("EmpEmail")
+            requestDate = reader("DateOfRequest")
+            fromDate = reader("DateFrom")
+            toDate = reader("DateTo")
+            approverName = reader("ApproverName")
+            approverNum = reader("ApproverNum")
+            approverEmail = reader("ApproverEmail")
+            requestType = reader("RequestType")
+            totalHours = reader("TotalHoursOff")
+            notes = reader("EmpNotes")
+        End If
+    End Sub
+
+#End Region
+
+#Region "Data Methods"
+
+    Public Sub InsertFTORequest()
+        RequestDAL.InsertFTORequest(empName, empNum, empEmail, requestDate, _
+            fromDate, toDate, approverName, approverNum, approverEmail, _
+            requestType, totalHours, notes)
+        'find the request ID for the recently added request
+        requestNumber = RequestDAL.GetFTORecordID(requestDate)
+    End Sub
+
+    Public Sub RespondToFTORequest()
+        RequestDAL.RespondToFTORequest(requestNumber, actionTaken, approvedBy, _
+                                        dateApproved, ftoBalance, comments)
+    End Sub
+
+#End Region
+
+#Region "Send Emails"
+
+    Public Sub SendRequestToApprover()
+        Dim fromAddress As String = Trim(empEmail)
+        Dim toAddress As String = Trim(approverEmail)
+        Dim subject As String = "FTO Request"
+        Dim body As String = "FTO Request from " & vbCrLf & empName & vbCrLf & vbCrLf & _
+            "Please click here to respond to the request." & vbCrLf & _
+            ConfigurationManager.AppSettings("ApplicationPath") & "FTOApproval.aspx?requestNumber=" & requestNumber & vbCrLf
+
+        Dim email As New MailMessage(fromAddress, toAddress, subject, body)
+        Dim mailClient As SmtpClient = New SmtpClient(ConfigurationManager.AppSettings("MailServer"))
+        mailClient.Send(email)
+    End Sub
+
+    Public Sub SendConfirmationToRequestor()
+        Dim fromAddress As String = "info@sva.com"
+        Dim toAddress As String = Trim(empEmail)
+        Dim subject As String = "Your FTO Request has been sent"
+        Dim body As String = "For your records:" & vbCrLf & vbCrLf & _
+            "Your FTO Request was sent today to " & approverName & "." & vbCrLf & vbCrLf & _
+            "You requested time off from '" & fromDate & "' to '" & toDate & "'." & vbCrLf & _
+            "Total Hours: " & totalHours & vbCrLf & _
+            "Type: " & requestType & vbCrLf & vbCrLf & vbCrLf & _
+            "Note: This message is not an approval of your requested time off." & vbCrLf & _
+            "This message is for providing you with an email record of your request."
+
+        Dim email As New MailMessage(fromAddress, toAddress, subject, body)
+        Dim mailClient As SmtpClient = New SmtpClient(ConfigurationManager.AppSettings("MailServer"))
+        mailClient.Send(email)
+    End Sub
+
+    Public Sub SendApproval()
+        Dim fromAddress As String = Trim(approverEmail)
+        Dim toAddress As String = Trim(empEmail)
+        Dim ccAddressOne As String = Trim(approverEmail)
+        '       No longer necessary to send an email to Sue Marr, 
+        '       automatically entered into FrontDesk and FTO Calendar
+        '
+        '       If functionality is required again, remove these comments 
+        '       and add the email address to the Web.Config
+        'Dim ccAddressTwo As String = ConfigurationManager.AppSettings("HrEmail")
+        Dim subject As String = "Response to FTO Request"
+        Dim body As String = "The request for FTO was " & actionTaken & vbCrLf & vbCrLf & _
+            "The details of this request can be found below." & vbCrLf & vbCrLf & _
+            "Date of Request: " & DateOfRequest & vbCrLf & _
+            "Requestor: " & empName & " (EmpID " & empNum & ")" & vbCrLf & _
+            "Dates/Time Requested: " & DateFrom & " - " & DateTo & vbCrLf & _
+            "Total Hours Requested: " & TotalHoursOff & vbCrLf & _
+            "Time Off Type: " & requestType & vbCrLf & _
+            "Notes: " & notes & vbCrLf & _
+            "Approving Authority: " & approvedBy & vbCrLf & _
+            "Authority Comments: " & comments
+
+        If actionTaken = "APPROVED" Then
+            body = body & vbCrLf & vbCrLf & _
+                "A corresponding advanced Sign Out has been made for you in the Front Desk Application."
+        End If
+
+        Dim email As New MailMessage(fromAddress, toAddress, subject, body)
+        email.CC.Add(ccAddressOne)
+        'email.CC.Add(ccAddressTwo)
+        Dim mailClient As SmtpClient = New SmtpClient(ConfigurationManager.AppSettings("MailServer"))
+        mailClient.Send(email)
+    End Sub
+
+#End Region
+
+#Region "Add To FrontDesk"
+
+    Public Sub AddToFrontDesk()
+        Dim empId As Integer = CInt(empNum)
+        RequestDAL.AddToFrontDesk(empId, "FTO", fromDate, toDate)
+    End Sub
+
+#End Region
+
+#Region "Property Methods"
+    Public ReadOnly Property EmployeeName() As String
+        Get
+            Return empName
+        End Get
+    End Property
+
+    Public ReadOnly Property EmployeeNum() As String
+        Get
+            Return empNum
+        End Get
+    End Property
+
+    Public ReadOnly Property DateOfRequest() As String
+        Get
+            Return requestDate
+        End Get
+    End Property
+
+    Public ReadOnly Property TypeOfRequest() As String
+        Get
+            Return requestType
+        End Get
+    End Property
+
+    Public ReadOnly Property DateFrom() As DateTime
+        Get
+            Return fromDate
+        End Get
+    End Property
+
+    Public ReadOnly Property DateTo() As DateTime
+        Get
+            Return toDate
+        End Get
+    End Property
+
+    Public ReadOnly Property TotalHoursOff() As String
+        Get
+            Return totalHours
+        End Get
+    End Property
+
+    Public ReadOnly Property EmployeeNotes() As String
+        Get
+            Return notes
+        End Get
+    End Property
+
+    Public ReadOnly Property ApproverNumber() As String
+        Get
+            Return approverNum
+        End Get
+    End Property
+
+    Public Property Action() As String
+        Get
+            Return ActionTaken
+        End Get
+        Set(ByVal value As String)
+            actionTaken = value
+        End Set
+    End Property
+
+    Public Sub SetApprovedBy(ByVal _approvedBy As String)
+        approvedBy = _approvedBy
+    End Sub
+
+    Public Sub SetDateApproved(ByVal _dateApproved As String)
+        dateApproved = _dateApproved
+    End Sub
+
+    Public Sub SetFTOBalance(ByVal _ftoBalance As String)
+        ftoBalance = _ftoBalance
+    End Sub
+
+    Public Sub SetComments(ByVal _comments As String)
+        comments = _comments
+    End Sub
+#End Region
+
+End Class

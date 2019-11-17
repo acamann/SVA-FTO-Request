@@ -1,0 +1,83 @@
+Imports Microsoft.VisualBasic
+Imports System.Data
+Imports System.Data.SqlClient
+Imports Microsoft.ApplicationBlocks.Data
+Imports System.Web.HttpContext
+Imports System.Web
+
+Public Class Authenticator
+
+    Protected context As HttpContext = HttpContext.Current
+    Protected cnSVAApplicationFramework As String = ConfigurationManager.ConnectionStrings("cnSVAApplicationFramework").ConnectionString
+
+#Region " Application Level Access "
+
+    Public Sub HasAppAccess() 'Determines if user has app access
+
+        If context.Session("empId") Is Nothing Then
+
+            Dim applicationId As Integer = CType(ConfigurationManager.AppSettings("ApplicationId"), Integer)
+            Dim userName As String = String.Empty
+            Dim reader As SqlDataReader
+
+            'get the username from server vars
+            userName = Trim(context.Request.ServerVariables("LOGON_USER")) 'their username with domain
+            userName = Mid(userName, InStr(1, userName, "\") + 1, Len(userName)) 'shave the domain name
+
+            'look the employee up
+            reader = SqlHelper.ExecuteReader(cnSVAApplicationFramework, CommandType.StoredProcedure, "getUserAppAccess", _
+            New SqlParameter("@UserName", userName), _
+            New SqlParameter("@ApplicationId", applicationId))
+
+            If reader.HasRows Then 'if they have any rights at all to the app, set their session vars up
+                While reader.Read
+                    'setup session vars
+                    context.Session("empId") = reader.Item("EmpId")
+                    context.Session("empEmail") = reader.Item("empEmail")
+                    context.Session("empName") = reader.Item("empName")
+                End While
+            Else
+                'redirect them to the access denied page.
+                context.Response.Redirect("../App_ErrorPages/403.aspx")
+            End If
+
+        End If
+
+    End Sub
+
+#End Region
+
+#Region " Page Level Access "
+
+    Public Function HasPageAccess() As Boolean 'returns true if user has access to the given page
+
+        Dim toolBox As New ToolBox
+        Dim currentURL As String = toolBox.GetCurrentPageAndFolder
+        Dim currentUser As Integer = context.Session("EmpId")
+        Dim reader As SqlDataReader
+
+        reader = SqlHelper.ExecuteReader(cnSVAApplicationFramework, CommandType.StoredProcedure, "getUserPageAccess", _
+        New SqlParameter("@FilePath", currentURL), _
+        New SqlParameter("@EmpId", currentUser))
+
+        If reader.HasRows Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
+
+#End Region
+
+#Region " Action Level Access "
+
+    Public Function HasPageActionAccess(ByVal EmpId As Integer, ByVal PageId As Integer, ByVal ActionId As Integer) As Boolean 'returns true if user has access to given action
+
+
+
+    End Function
+
+#End Region
+
+End Class

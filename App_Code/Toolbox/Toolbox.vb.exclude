@@ -1,0 +1,61 @@
+Imports Microsoft.VisualBasic
+Imports Microsoft.ApplicationBlocks.Data
+Imports System.Data
+Imports System.Data.SqlClient
+
+Public Class ToolBox
+    Public Context As HttpContext = HttpContext.Current
+    Public cnSVAApplicationFramework As String = ConfigurationManager.ConnectionStrings("cnSVAApplicationFramework").ConnectionString
+
+    Public Function GetPageName() As String 'returns the current page the user is on
+
+        Dim pathArray As Array
+        Dim urlPath As String = String.Empty
+
+        urlPath = Context.Request.ServerVariables("URL") 'This returns the folder path of the current page
+        pathArray = Split(urlPath, "/") 'Split the path up into an array
+
+        'The last member of the array is the page name.
+        Return pathArray(UBound(pathArray))
+
+    End Function
+
+    Public Function GetCurrentFolder() As String 'returns the folder of the currently viewed page
+
+        Dim pathArray As Array
+        Dim urlPath As String = String.Empty
+
+        urlPath = Context.Request.ServerVariables("URL") 'This returns the folder path of the current page
+        pathArray = Split(urlPath, "/") 'Split the path up into an array
+
+        'The last member of the array -1 is the folder name.
+        Return pathArray(UBound(pathArray) - 1)
+
+    End Function
+
+    Public Function GetCurrentFolderPath() As String 'returns the complete folder path of the currently viewed page
+        Dim urlPath As String = String.Empty
+        urlPath = Context.Request.ServerVariables("PATH_INFO") 'This returns the folder path of the current page
+        Return urlPath
+    End Function
+
+    Public Function GetCurrentPageAndFolder() As String
+
+        Dim pathArray As Array
+        Dim urlPath As String = String.Empty
+
+        urlPath = Context.Request.ServerVariables("URL") 'This returns the folder path of the current page
+        pathArray = Split(urlPath, "/") 'Split the path up into an array
+
+        'The last member of the array -1 is the folder name.
+        Return pathArray(UBound(pathArray) - 1) & "/" & pathArray(UBound(pathArray))
+
+    End Function
+
+    Public Function GetUSStates() As SqlDataReader
+
+        Return SqlHelper.ExecuteReader(cnSVAApplicationFramework, CommandType.StoredProcedure, "get_USStates")
+
+    End Function
+
+End Class

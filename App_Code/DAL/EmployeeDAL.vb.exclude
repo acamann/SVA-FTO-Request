@@ -1,0 +1,37 @@
+Imports Microsoft.VisualBasic
+Imports System.Data
+Imports System.Data.SqlClient
+Imports Microsoft.ApplicationBlocks.Data
+
+'EmployeeDAL has the data access methods to find the current user's employee and supervisor information
+Public Class EmployeeDAL
+
+    'Connection to the SVA Intranet DB as found in the web.config file
+    Protected Shared _ConIntranet As String = ConfigurationManager.ConnectionStrings("cnSVAIntranet").ConnectionString
+
+#Region "Data Access Methods"
+
+    Public Shared Function GetCurrentUser(ByVal userLogin As String) As SqlDataReader
+        Dim reader As SqlDataReader
+        reader = SqlHelper.ExecuteReader(_ConIntranet, CommandType.StoredProcedure, _
+            "sp_GetEmployeeByLogin", New SqlParameter("@login", userLogin))
+        Return reader
+    End Function
+
+    Public Shared Function GetSupervisor(ByVal empNum As String) As SqlDataReader
+        Dim reader As SqlDataReader
+        reader = SqlHelper.ExecuteReader(_ConIntranet, CommandType.StoredProcedure, _
+                    "sp_GetFTOSupervisor", New SqlParameter("@empNo", empNum))
+        Return reader
+    End Function
+
+    Public Shared Function GetFTOBalance(ByVal empNum As String) As SqlDataReader
+        Dim reader As SqlDataReader
+        reader = SqlHelper.ExecuteReader(_ConIntranet, CommandType.StoredProcedure, _
+            "sp_GetFTOBalance", New SqlParameter("@empNo", empNum))
+        Return reader
+    End Function
+
+#End Region
+
+End Class

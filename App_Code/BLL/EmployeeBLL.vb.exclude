@@ -1,0 +1,88 @@
+Imports Microsoft.VisualBasic
+Imports System.Data
+Imports System.Data.SqlClient
+Imports Microsoft.ApplicationBlocks.Data
+Imports System.Web.HttpContext
+
+'Employee retrieves and holds information about the current user and their FTO supervisor
+Public Class Employee
+
+#Region "Attributes"
+
+    Private empName As String = String.Empty                    'info about the employee visiting the page
+    Private empNum As String = String.Empty                     '   "
+    Private empEmail As String = String.Empty                   '   "
+    Private approverName As String = String.Empty               'info about the FTO supervisor for the employee visiting the page
+    Private approverNum As String = String.Empty                '   "
+    Private approverEmail As String = String.Empty              '   "
+    
+    Protected _context As HttpContext = HttpContext.Current
+
+#End Region
+
+#Region "Constructor"
+
+    Public Sub New()
+        Dim userLogin As String = Trim(_context.Request.ServerVariables("LOGON_USER")) 'their username with domain
+        userLogin = Mid(userLogin, InStr(1, userLogin, "\") + 1, Len(userLogin)) 'shave the domain name
+        Dim reader As SqlDataReader = EmployeeDAL.GetCurrentUser(userLogin)
+        If reader.HasRows Then
+            reader.Read()
+            empName = Trim(reader("p_fname")) & " " & Trim(reader("p_lname"))
+            empNum = Trim(reader("p_empno"))
+            empEmail = Trim(reader("p_empemail"))
+        End If
+        reader = EmployeeDAL.GetSupervisor(Me.GetUserNum)
+        If reader.HasRows Then
+            reader.Read()
+            approverName = Trim(reader("p_lname")) & ", " & Trim(reader("p_fname"))
+            approverNum = Trim(reader("p_empno"))
+            approverEmail = Trim(reader("p_empemail"))
+        End If
+    End Sub
+
+#End Region
+
+#Region "Get Methods"
+
+    Public Function GetUserNum() As String
+        Return empNum
+    End Function
+
+    Public Function GetUserName() As String
+        Return empName
+    End Function
+
+    Public Function GetUserEmail() As String
+        Return empEmail
+    End Function
+
+    Public Function GetApproverNum() As String
+        Return approverNum
+    End Function
+
+    Public Function GetApproverName() As String
+        Return approverName
+    End Function
+
+    Public Function GetApproverEmail() As String
+        Return approverEmail
+    End Function
+
+    Public Function GetFTOBalance(ByVal empNum As String) As Double
+        Dim reader As SqlDataReader = EmployeeDAL.GetFTOBalance(empNum)
+        Dim ftoBalance As Double
+        If reader.HasRows Then
+            reader.Read()
+            Dim carry As Double = CDbl(reader("p_percarry"))
+            Dim close As Double = CDbl(reader("p_perclose"))
+            Dim taken As Double = CDbl(reader("p_pertaken"))
+            Dim accr As Double = CDbl(reader("p_peraccr"))
+            ftoBalance = carry + close - taken + accr
+        End If
+        Return ftoBalance
+    End Function
+
+#End Region
+
+End Class

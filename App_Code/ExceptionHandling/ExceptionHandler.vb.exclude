@@ -1,0 +1,154 @@
+Imports Microsoft.VisualBasic
+Imports System
+Imports System.Net.Mail
+Imports System.Net.Mail.SmtpClient
+Imports System.Web
+Imports System.Diagnostics
+Imports System.Data
+Imports System.Data.SqlClient
+Imports Microsoft.ApplicationBlocks.Data
+
+Public Class exceptionHandler
+
+    Protected cnSVAApplicationFramework As String = ConfigurationManager.ConnectionStrings("cnSVAApplicationFramework").ConnectionString
+    Protected context As HttpContext = HttpContext.Current
+    Protected userName As String = String.Empty
+
+#Region " Initial Processing "
+
+    Public Sub handleException(ByVal ex As Exception)
+
+        'declare all the variables
+        Dim context As HttpContext = HttpContext.Current
+        Dim errorData As String = String.Empty
+        Dim eventID As Integer = 0
+        Dim referer As String = String.Empty
+        Dim form As String = context.Request.Form.ToString
+        Dim query As String = String.Empty
+        Dim appAdminEmail As String = ConfigurationManager.AppSettings("AppAdminEmail")
+
+        'Capture which handlings to execute for this app
+        Dim MailExceptionsToAppAdmin As Boolean = ConfigurationManager.AppSettings("MailExceptionsToAppAdmin")
+        Dim LogExceptionsToDatabase As Boolean = ConfigurationManager.AppSettings("LogExceptionsToDatabase")
+
+        'check for nulls in context objects
+        If Not context.Request.ServerVariables("HTTP_REFERER") Is Nothing Then
+            referer = context.Request.ServerVariables("HTTP_REFERER").ToString
+        End If
+
+        If Not context.Request.QueryString.ToString Is Nothing Then
+            query = context.Request.QueryString.ToString
+        End If
+
+        'capture all the exception data
+        errorData = "SOURCE: " & ex.Source & vbCrLf & vbCrLf _
+            & "ERROR MESSAGE: " & ex.Message & vbCrLf & vbCrLf _
+            & "FORM: " & form & vbCrLf & vbCrLf _
+            & "QUERYSTRING: " & query & vbCrLf & vbCrLf _
+            & "TARGETSITE: " & ex.TargetSite.ToString & vbCrLf & vbCrLf _
+            & "REFERER: " & referer & vbCrLf & vbCrLf _
+            & "USER: " & userName
+
+        'check to see if we need to execute the mail admin sub
+        If MailExceptionsToAppAdmin = True Then
+            'make sure we have an app admin email
+            If Not appAdminEmail Is Nothing Then
+                MailExceptionToAppAdmin(appAdminEmail, errorData)
+            End If
+        End If
+
+        'check to see if we need to execute the log to database sub
+        If LogExceptionsToDatabase = True Then
+            LogExceptionToDatabase(ex)
+        End If
+
+    End Sub
+
+#End Region
+
+#Region " Send App Admin Email "
+
+    Protected Sub MailExceptionToAppAdmin(ByVal appAdminEmail As String, ByVal errorData As String)
+
+        'Emails the application's administrator
+        Dim emailName As String = ConfigurationManager.AppSettings("AppName") & " Error"
+        Dim smtpClient As New SmtpClient
+        Dim message As New MailMessage
+        Dim sender As New MailAddress("no-reply@sva.com", emailName)
+
+        message.To.Add(appAdminEmail)
+        message.IsBodyHtml = False
+        message.From = sender
+        message.Subject = "Application Exception"
+        message.Body = message.Body & "Error troubleshooting information is included below." & vbCrLf & vbCrLf
+        message.Body = message.Body & errorData
+        smtpClient.Host = ConfigurationManager.AppSettings("MailServer")
+        smtpClient.Send(message)
+
+        message.Dispose()
+        sender = Nothing
+
+    End Sub
+
+#End Region
+
+#Region " Log Exception to Database "
+
+    Protected Sub LogExceptionToDatabase(ByVal ex As Exception)
+
+        Dim applicationId As Integer = ConfigurationManager.AppSettings("AppId")
+        Dim source As String = ex.Source
+        Dim message As String = ex.Message.ToString
+        Dim form As String = String.Empty
+        Dim queryString As String = String.Empty
+        Dim targetSite As String = ex.TargetSite.ToString
+        Dim stackTrace As String = ex.StackTrace.ToString
+        Dim referer As String = String.Empty
+
+        'see if there is a username to include in the data so we know who experienced the error
+        If Not HttpContext.Current.Session("UserName") Is Nothing Then
+            userName = HttpContext.Current.Session("UserName").ToString
+        End If
+
+        'which page was the referrer to this one
+        If Not context.Request.ServerVariables("HTTP_REFERER") Is Nothing Then
+            referer = context.Request.ServerVariables("HTTP_REFERER").ToString
+        End If
+
+        'give us form information to include
+        If Not context.Request.Form Is Nothing Then
+            form = context.Request.Form.ToString
+        End If
+
+        'give us any querystring info that may be present
+        If Not context.Request.QueryString Is Nothing Then
+            queryString = context.Request.QueryString.ToString
+        End If
+
+        'Log exception data to database
+
+        Try
+
+            SqlHelper.ExecuteNonQuery(cnSVAApplicationFramework, CommandType.StoredProcedure, "ins_WebAppError", _
+            New SqlParameter("@userName", userName), _
+            New SqlParameter("@applicationID", ConfigurationManager.AppSettings("AppID")), _
+            New SqlParameter("@source", ex.Source), _
+            New SqlParameter("@message", ex.Message), _
+            New SqlParameter("@form", form), _
+            New SqlParameter("@queryString", queryString), _
+            New SqlParameter("@targetSite", ex.TargetSite.ToString), _
+            New SqlParameter("@stackTrace", ex.StackTrace.ToString), _
+            New SqlParameter("@referer", referer))
+
+        Catch exc As Exception
+
+            'if the database write fails, log it into the server event log
+            EventLog.WriteEntry(ex.Source, "Database Error From Exception Log!", EventLogEntryType.Error, 65535)
+
+        End Try
+
+    End Sub
+
+#End Region
+
+End Class

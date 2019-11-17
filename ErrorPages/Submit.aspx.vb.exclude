@@ -1,0 +1,83 @@
+Imports SVAAppServices
+Imports System.Net.Mail
+
+Partial Class CustomError_Submit
+    Inherits System.Web.UI.Page
+
+    Protected applicationId As String = ConfigurationManager.AppSettings("ApplicationId")
+    Protected appServices As New AppServices
+    Protected adminEmail As String
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+        ' Display the application name
+        Dim application As Application.ApplicationsDataTable = appServices.GetApplicationByID(applicationId)
+        If application.Rows.Count > 0 Then
+            lblApplication.Text = application(0).Name
+            adminEmail = application(0).AdminEmail
+        End If
+
+        ' Display today's date
+        lblDateReported.Text = Date.Now()
+
+        ' Display employee name
+        If Session("empId") Is Nothing Then
+            Dim sessionHandler As New SVAAppHandlers.SessionHandler
+            sessionHandler.SetUpSessionVariables()
+        End If
+        lblReportedBy.Text = Session("empName")
+
+    End Sub
+
+    Protected Sub btnReportBug_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnReportBug.Click
+        Dim errorWasAdded As Boolean
+
+        ' Insert the bug into the database
+        Dim dateOccurred As Date = lblDateReported.Text
+        Dim empId As Integer = Session("empId")
+        Dim title As String
+        Dim details As String = _
+            "STEPS TO REPRODUCE: " & vbCrLf & txtSteps.Text & vbCrLf & vbCrLf & _
+            "EXPECTED BEHAVIOR: " & vbCrLf & txtExpected.Text & vbCrLf & vbCrLf & _
+            "ACTUAL BEHAVIOR: " & vbCrLf & txtActual.Text
+        Dim notes As String = Nothing
+        Dim statusId As Integer = 100       'Unassigned
+        Dim priorityId As Integer = 101     'Normal
+        Dim assignedTo As Integer = Nothing
+
+        ' Set the title
+        If txtActual.Text.Length <= 70 Then
+            title = "User Submitted: " & txtActual.Text
+        Else
+            title = "User Submitted: " & txtActual.Text.Substring(0, 70)
+        End If
+
+        ' Add the error
+        errorWasAdded = appServices.AddError(dateOccurred, applicationId, empId, title, _
+                details, notes, statusId, priorityId, assignedTo) = 1
+
+        If errorWasAdded Then
+
+        End If
+
+        ' Email the application's administrator
+        Dim emailName As String = lblApplication.Text & " Error"
+        Dim smtpClient As New SmtpClient
+        Dim message As New MailMessage
+        Dim mailSender As New MailAddress("no-reply@sva.com", emailName)
+
+        message.To.Add(adminEmail)
+        message.IsBodyHtml = False
+        message.From = mailSender
+        message.Subject = "User Submitted Bug"
+        message.Body = message.Body & "The following bug was submitted by " & Session("empName") & "." & vbCrLf & vbCrLf
+        message.Body = message.Body & details
+        smtpClient.Send(message)
+
+        message.Dispose()
+        mailSender = Nothing
+
+        mvBug.SetActiveView(viewMessage)
+
+    End Sub
+End Class

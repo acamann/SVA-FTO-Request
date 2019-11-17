@@ -1,0 +1,214 @@
+﻿body {
+	margin: 0px;
+}
+.headertable {
+	background-color: #626262;
+	border-bottom-width: 5px;
+	border-bottom-style: solid;
+	border-bottom-color: #ACACAC;
+	height: 20px;
+	font-family: Tahoma, Verdana;
+	font-size: 12px;
+	color: #FFFFFF;
+	padding: 4px;
+	border-top-style: none;
+	border-right-style: none;
+	border-left-style: none;
+	font-weight: bold;
+}
+.bodytext {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	padding: 4px;
+}
+.textbox {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #000000;
+	border: 1px solid #CCCCCC;
+}
+.formfieldlabel {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #000000;
+	text-align: right;
+	width: 125px;
+	vertical-align: middle;
+	padding-right: 4px;
+	height: 30px;
+}
+.formcontrol {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #000000;
+	border: 1px solid #706F90;
+}
+.gridviewheader {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: Black;
+	text-decoration: none;
+	padding-left: 2px;
+	height: 19px;
+	border-right: 1px solid #E7E7E7;
+	border-left: 1px solid #E7E7E7;
+	background-image: url(Backgrounds/grid_header_bg.jpg);
+	font-weight: bold;
+}
+.gridviewrow {
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	height: 19px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #ECECEC;
+	padding: 4px;
+	height: 25px;
+}
+.gridviewrow-hl {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: Black;
+	text-decoration: none;
+	height: 19px;
+	background-color: #F3F3F3;
+	color: #333333;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #ECECEC;
+	padding: 0px;
+}
+a {
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+}
+a:hover {
+	text-decoration: underline;
+}
+a:visited {
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+}
+a:active {
+	text-decoration: none;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+}
+.pagetitletable {
+	background-color: #FFFFFF;
+	height: 55px;
+	border-bottom-width: 1px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: none;
+	border-bottom-color: #ACACAC;
+	vertical-align: bottom;
+}
+.siteappname {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333333;
+	font-weight: normal;
+}
+.pagetitle {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+	color: #333333;
+	padding: 4px;
+}
+.paragraphcell {
+	padding: 5px;
+}
+li {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	list-style-type: square;
+}
+.sectionheader {
+	font-family: Tahoma, Verdana;
+	font-size: 16px;
+	font-weight: bold;
+	color: #333333;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #999999;
+	padding: 4px;
+	text-transform: capitalize;
+}
+.formfieldtextcell {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #666666;
+	background-color: #EFEFEF;
+	text-align: right;
+	padding: 4px;
+	height: 25px;
+	width: 125px;
+}
+.formcontrolcell {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	padding: 4px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+.formheadercell {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	background-color: #E0DFE3;
+	text-align: center;
+	padding: 2px;
+	border-top-width: 2px;
+	border-right-width: 2px;
+	border-bottom-width: 1px;
+	border-left-width: 3px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: none;
+	border-top-color: #0099FF;
+	border-right-color: #CCCCCC;
+	border-bottom-color: #ACACAC;
+	border-left-color: #ACACAC;
+	height: 18px;
+	font-weight: bold;
+	vertical-align: top;
+}
+.formheadercell_rt {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #333333;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: solid;
+	border-left-style: none;
+	border-top-color: #ACACAC;
+	border-right-color: #ACACAC;
+	border-bottom-color: #ACACAC;
+	border-left-color: #ACACAC;
+}
+.validatorerror {
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: White;
+	background-color: Red;
+	padding: 4px;
+}

@@ -1,0 +1,66 @@
+﻿body {
+}
+.calendar
+{
+    width:270px;
+    font-size:11px;
+}
+.day 
+{
+    /*width:100%;*/
+    height:35px;
+    background-color:White;
+    border:solid 1px #CCDDEE;
+}
+.isOtherMonth
+{
+    height:35px;
+    background-color:#F4F1EC;
+    border:solid 1px #CCDDEE;
+}
+
+.dayNum
+{
+    /*width:100%;*/
+    font-weight:bold;
+    padding-right:2px;
+    background-color:#BBCCDD;
+    color:black;
+    text-align:center;
+    font-size:10px;
+}
+.dayContent
+{
+    padding:6px;
+    font-size:11px;
+    color:#6A6A6B;
+}
+a.day 
+{
+    text-decoration:none;
+    display:block;
+    cursor:pointer;
+}
+a.day:hover 
+{
+    background-color:#FFFFCC;
+}
+a.day:hover div.dayNum 
+{
+    background-color:#E8EEF7;
+}
+
+.dateHeader
+{
+    padding:4px;
+    font-size:11px;
+    font-weight:bold;
+    background-color:#6A6A6B;
+    color:White;
+}
+.requestList 
+{
+    height:225px; 
+    width:100%; 
+    border:none;
+}
